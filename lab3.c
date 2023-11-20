@@ -79,9 +79,6 @@ void* validate_subgrid(void* param) {
     param_struct* params = (param_struct*)param;
     int result = 1;
 
-    int subgrid_row = params->starting_row / 3;
-    int subgrid_col = params->starting_col / 3;
-
     for (int row = params->starting_row; row <= params->ending_row; row++) {
         for (int col = params->starting_col; col <= params->ending_col; col++) {
             for (int other_row = params->starting_row; other_row <= params->ending_row; other_row++) {
@@ -89,22 +86,14 @@ void* validate_subgrid(void* param) {
                     if (row != other_row || col != other_col) {
                         if (sudoku_board[row][col] == sudoku_board[other_row][other_col]) {
                             result = 0;
-                            break;
+                            pthread_exit(NULL);  // exit immediately if a duplicate is found
                         }
                     }
                 }
-                if (result == 0) {
-                    break;
-                }
             }
-            if (result == 0) {
-                break;
-            }
-        }
-        if (result == 0) {
-            break;
         }
     }
+
     worker_validation[params->id] = result;
     pthread_exit(NULL);
 }
